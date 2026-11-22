@@ -1,0 +1,10 @@
+{
+	"id": "othoughts",
+	"name": "Othoughts",
+	"version": "5.2.0",
+	"minAppVersion": "1.13.7",
+	"description": "Turn Canvas into a mind-mapping tool: collapse and move whole branches, auto layout in any direction, keyboard creation and navigation, map styles, an editable outline, snapshots, and export to FreeMind, OPML and Markdown.",
+	"author": "Luis Garcia Valina",
+	"authorUrl": "https://github.com/luisgarciavalina",
+	"isDesktopOnly": false
+}

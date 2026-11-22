@@ -1,0 +1,20 @@
+# dependencies
+node_modules/
+
+# build output: main.js is built from src/ and attached to each release
+/main.js
+*.map
+
+# your own Obsidian data and local settings: never commit these
+data.json
+local.json
+
+# personal guide (Spanish), kept out of the public repository
+docs/PUBLICAR.md
+
+# test output
+tests/.salida/
+
+*.log
+.DS_Store
+Thumbs.db

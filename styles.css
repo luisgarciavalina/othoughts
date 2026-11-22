@@ -1,0 +1,872 @@
+/* Othoughts */
+
+/* --------------------------------------------- boton colapsar/expandir */
+/*
+ * Va SIEMPRE por fuera de la caja: los puntos de conexion de Obsidian son
+ * cuadrados de 20px pegados adentro del centro de cada lado, y los tiradores
+ * de tamano ocupan las esquinas. Con este margen no se pisan.
+ */
+.canvas-node .mm-toggle {
+	--mm-gap: 9px;
+	position: absolute;
+	z-index: 5;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+	min-width: 20px;
+	height: 20px;
+	padding: 0 5px;
+	border: 1px solid var(--canvas-color, var(--background-modifier-border));
+	border-radius: 10px;
+	background-color: var(--background-primary);
+	color: var(--canvas-color, var(--text-muted));
+	font-size: 12px;
+	font-weight: 700;
+	line-height: 1;
+	cursor: pointer;
+	opacity: 0.55;
+	user-select: none;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+	transition: opacity 120ms ease, background-color 120ms ease, color 120ms ease;
+}
+
+.canvas-node:hover .mm-toggle,
+.canvas-node.is-selected .mm-toggle,
+.canvas-node .mm-toggle.is-collapsed {
+	opacity: 1;
+}
+
+.canvas-node .mm-toggle:hover {
+	background-color: var(--canvas-color, var(--interactive-accent));
+	border-color: var(--canvas-color, var(--interactive-accent));
+	color: var(--text-on-accent);
+}
+
+.canvas-node .mm-toggle.is-collapsed {
+	background-color: var(--canvas-color, var(--interactive-accent));
+	border-color: var(--canvas-color, var(--interactive-accent));
+	color: var(--text-on-accent);
+}
+
+.canvas-node .mm-toggle.is-collapsed::before {
+	content: "+";
+}
+
+.mm-toggle-right { left: 100%; margin-left: var(--mm-gap); top: 50%; transform: translateY(-50%); }
+.mm-toggle-left { right: 100%; margin-right: var(--mm-gap); top: 50%; transform: translateY(-50%); }
+.mm-toggle-top { bottom: 100%; margin-bottom: var(--mm-gap); left: 50%; transform: translateX(-50%); }
+.mm-toggle-bottom { top: 100%; margin-top: var(--mm-gap); left: 50%; transform: translateX(-50%); }
+
+/* ------------------------------------------------- nodo colapsado */
+.canvas-node.mm-collapsed .canvas-node-container {
+	box-shadow:
+		5px 5px 0 -1px var(--background-primary),
+		5px 5px 0 0 var(--canvas-color, var(--background-modifier-border)),
+		10px 10px 0 -1px var(--background-primary),
+		10px 10px 0 0 var(--canvas-color, var(--background-modifier-border));
+}
+
+/* ------------------------------------------- pistas al enganchar ramas */
+/* Centro del nodo: pasa a ser hijo. Bordes: queda como hermano. */
+.canvas-node.mm-drop-child .canvas-node-container {
+	box-shadow: inset 0 0 0 3px var(--interactive-accent);
+}
+
+.canvas-node.mm-drop-before .canvas-node-container {
+	box-shadow: inset 0 5px 0 0 var(--interactive-accent);
+}
+
+.canvas-node.mm-drop-after .canvas-node-container {
+	box-shadow: inset 0 -5px 0 0 var(--interactive-accent);
+}
+
+/* En mapas verticales los hermanos se ordenan de izquierda a derecha. */
+.canvas-node.mm-drop-before.mm-drop-x .canvas-node-container {
+	box-shadow: inset 5px 0 0 0 var(--interactive-accent);
+}
+
+.canvas-node.mm-drop-after.mm-drop-x .canvas-node-container {
+	box-shadow: inset -5px 0 0 0 var(--interactive-accent);
+}
+
+/* ------------------------------------------------- trazo de flechas */
+.mm-edge-dashed path,
+path.mm-edge-dashed {
+	stroke-dasharray: 12 8;
+}
+
+.mm-edge-dotted path,
+path.mm-edge-dotted {
+	stroke-dasharray: 2 6;
+	stroke-linecap: round;
+}
+
+.mm-edge-thick path,
+path.mm-edge-thick {
+	stroke-width: 6px;
+}
+
+/* ------------------------------------------------------ esquema (outline) */
+.mm-outline {
+	padding: 0;
+	overflow: auto;
+}
+
+.mm-outline-header {
+	position: sticky;
+	top: 0;
+	z-index: 2;
+	padding: 8px 12px;
+	border-bottom: 1px solid var(--background-modifier-border);
+	background-color: var(--background-secondary);
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+
+.mm-outline-title {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* botones de exportar del esquema */
+.mm-outline-tools {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px;
+	margin-top: 6px;
+}
+
+.mm-outline-btn {
+	height: auto;
+	padding: 2px 8px;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 999px;
+	background-color: var(--background-primary);
+	color: var(--text-muted);
+	font-size: 11px;
+	font-weight: 400;
+	line-height: 16px;
+	letter-spacing: 0;
+	text-transform: none;
+	cursor: pointer;
+	box-shadow: none;
+}
+
+.mm-outline-btn:hover {
+	color: var(--text-normal);
+	border-color: var(--interactive-accent);
+}
+
+.mm-outline-list {
+	padding: 6px 8px 40px 0;
+}
+
+.mm-outline-empty {
+	padding: 16px 14px;
+	color: var(--text-faint);
+	font-size: var(--font-ui-small);
+}
+
+.mm-outline-row {
+	display: flex;
+	align-items: flex-start;
+	gap: 4px;
+	border-radius: var(--radius-s, 4px);
+	line-height: 1.4;
+	/* la sangria de cada nivel: el plugin solo pone --mm-depth */
+	padding-left: calc(6px + var(--mm-depth, 0) * 17px);
+}
+
+.mm-outline-row:hover {
+	background-color: var(--background-modifier-hover);
+}
+
+.mm-outline-row.is-selected {
+	background-color: var(--background-modifier-active-hover, var(--background-modifier-hover));
+	box-shadow: inset 2px 0 0 0 var(--interactive-accent);
+}
+
+.mm-outline-row.is-hidden-branch .mm-outline-text {
+	color: var(--text-faint);
+	font-style: italic;
+}
+
+.mm-outline-arrow {
+	flex: 0 0 auto;
+	width: 14px;
+	padding-top: 2px;
+	color: var(--text-faint);
+	font-size: 11px;
+	text-align: center;
+	user-select: none;
+}
+
+.mm-outline-arrow.is-clickable {
+	cursor: pointer;
+	color: var(--text-muted);
+}
+
+.mm-outline-arrow.is-clickable:hover {
+	color: var(--text-normal);
+}
+
+.mm-outline-text {
+	flex: 1;
+	min-width: 0;
+	padding: 3px 4px;
+	border-radius: var(--radius-s, 4px);
+	color: var(--text-normal);
+	font-size: var(--font-ui-small);
+	outline: none;
+	overflow-wrap: break-word;
+	white-space: pre-wrap;
+}
+
+.mm-outline-text:focus {
+	background-color: var(--background-primary);
+	box-shadow: 0 0 0 1px var(--interactive-accent);
+}
+
+.mm-outline-text.is-readonly {
+	color: var(--text-muted);
+}
+
+.mm-outline-count {
+	flex: 0 0 auto;
+	align-self: center;
+	margin-right: 6px;
+	padding: 0 6px;
+	border-radius: 9px;
+	background-color: var(--interactive-accent);
+	color: var(--text-on-accent);
+	font-size: 10px;
+	font-weight: 700;
+	line-height: 17px;
+}
+
+/* ---------------------------- cuadradito para estirar caja + letra juntas */
+/*
+ * Pegado al borde interno izquierdo, en la esquina de abajo. Queda debajo del
+ * tirador de tamano de Obsidian (que se dibuja por encima del nodo), pero el
+ * plugin lo reconoce por posicion, asi que el clic es nuestro igual. La esquina
+ * de abajo a la izquierda va redondeada como la de la caja, para que encaje.
+ */
+.canvas-node .mm-grip {
+	position: absolute;
+	left: 1px;
+	bottom: 1px;
+	z-index: 6;
+	width: 14px;
+	height: 14px;
+	box-sizing: border-box;
+	border: 2px solid var(--background-primary);
+	border-radius: 2px 2px 2px var(--radius-m, 8px);
+	background-color: var(--text-normal);
+	cursor: nesw-resize;
+	opacity: 0.7;
+	transition: opacity 120ms ease, background-color 120ms ease;
+}
+
+.canvas-node:hover .mm-grip,
+.canvas-node.is-selected .mm-grip {
+	opacity: 1;
+}
+
+.canvas-node .mm-grip:hover,
+.canvas-node.mm-gripping .mm-grip {
+	background-color: var(--interactive-accent);
+	opacity: 1;
+}
+
+/* mientras estiras, que no moleste la seleccion de texto */
+.canvas-node.mm-gripping .canvas-node-content {
+	pointer-events: none;
+	user-select: none;
+}
+
+/* ------------------------------------------------ tamano de letra por nodo */
+/*
+ * Obsidian no dibuja el texto a partir de --font-text-size: le pone un
+ * font-size al elemento raiz y todo lo hereda. Asi que el plugin calcula los px
+ * de cada nodo (--mm-font-px) y los aplicamos al contenido de la caja. Los
+ * titulos de markdown ya vienen en em (--h1-size: 1.618em), asi que acompanan.
+ */
+.canvas-node.mm-font .canvas-node-content,
+.canvas-node.mm-font .markdown-preview-view,
+.canvas-node.mm-font .markdown-rendered,
+.canvas-node.mm-font .markdown-source-view,
+.canvas-node.mm-font .cm-editor,
+.canvas-node.mm-font .cm-content,
+.canvas-node.mm-font .canvas-node-label {
+	font-size: var(--mm-font-px, 16px);
+}
+/* ------------------------------------------------- panel de herramientas */
+.canvas-wrapper .mm-tools {
+	position: absolute;
+	left: 12px;
+	bottom: 42px;
+	z-index: 31;
+}
+
+.canvas-wrapper .mm-tools-btn {
+	width: 28px;
+	height: 28px;
+	padding: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 999px;
+	background-color: var(--background-primary);
+	color: var(--text-muted);
+	font-size: 15px;
+	line-height: 1;
+	cursor: pointer;
+	box-shadow: var(--shadow-s);
+}
+
+.canvas-wrapper .mm-tools-btn:hover,
+.canvas-wrapper .mm-tools.is-open .mm-tools-btn {
+	color: var(--text-normal);
+	border-color: var(--interactive-accent);
+}
+
+.canvas-wrapper .mm-panel {
+	position: absolute;
+	left: 0;
+	bottom: 36px;
+	width: 290px;
+	max-height: min(70vh, 520px);
+	overflow-y: auto;
+	padding: 12px 14px 14px;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 10px;
+	background-color: var(--background-primary);
+	color: var(--text-normal);
+	box-shadow: var(--shadow-l);
+	font-size: 13px;
+}
+
+.canvas-wrapper .mm-panel-title {
+	font-weight: var(--font-semibold, 600);
+	font-size: 13px;
+	margin-bottom: 10px;
+}
+
+.canvas-wrapper .mm-sec { margin-top: 12px; }
+.canvas-wrapper .mm-sec:first-of-type { margin-top: 0; }
+
+.canvas-wrapper .mm-sec-title {
+	color: var(--text-muted);
+	font-size: 11px;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	margin-bottom: 6px;
+}
+
+.canvas-wrapper .mm-chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 5px;
+	align-items: center;
+}
+
+.canvas-wrapper .mm-chip {
+	padding: 3px 9px;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 999px;
+	background-color: var(--background-primary);
+	color: var(--text-muted);
+	font-size: 12px;
+	line-height: 17px;
+	cursor: pointer;
+	box-shadow: none;
+}
+
+.canvas-wrapper .mm-chip:hover {
+	color: var(--text-normal);
+	background-color: var(--background-modifier-hover);
+}
+
+.canvas-wrapper .mm-chip.is-active {
+	color: var(--text-on-accent);
+	background-color: var(--interactive-accent);
+	border-color: var(--interactive-accent);
+}
+
+.canvas-wrapper .mm-valor {
+	min-width: 48px;
+	text-align: center;
+	font-family: var(--font-monospace);
+	font-size: 12px;
+	font-variant-numeric: tabular-nums;
+	color: var(--text-normal);
+}
+
+
+/* ====================================================== estilos del mapa */
+/*
+ * Cada estilo es una clase en el contenedor del canvas (mm-theme-...). El
+ * plugin marca cada nodo y flecha con su nivel (data-mm-lvl: 0 raiz, 1 rama,
+ * 2 hojas, x sueltos, g grupos) y su rama (data-mm-branch 0-4). Lo que pintaste
+ * a mano no recibe rama y conserva su color. Imagenes, notas y links no se
+ * tocan: el estilo viste el marco, nunca el contenido.
+ */
+.mm-grid-line { display: none; }
+
+.canvas-wrapper[class*="mm-theme-"] [data-mm-branch="0"] { --mm-c: var(--mm-b0); }
+.canvas-wrapper[class*="mm-theme-"] [data-mm-branch="1"] { --mm-c: var(--mm-b1); }
+.canvas-wrapper[class*="mm-theme-"] [data-mm-branch="2"] { --mm-c: var(--mm-b2); }
+.canvas-wrapper[class*="mm-theme-"] [data-mm-branch="3"] { --mm-c: var(--mm-b3); }
+.canvas-wrapper[class*="mm-theme-"] [data-mm-branch="4"] { --mm-c: var(--mm-b4); }
+.canvas-wrapper[class*="mm-theme-"] .canvas-node:not([data-mm-branch]) { --mm-c: var(--canvas-color); }
+
+/* ------------------------------------------------------------- Clásico */
+.canvas-wrapper.mm-theme-clasico {
+	--canvas-background: #F4F2ED;
+	background-color: #F4F2ED;
+	--mm-root: #6E73E8;
+	--mm-b0: #E0913A; --mm-b1: #2FA39A; --mm-b2: #D9577A; --mm-b3: #5C83E6; --mm-b4: #9C6ADE;
+}
+.mm-theme-clasico .canvas-background circle { fill: transparent; }
+.mm-theme-clasico .canvas-node-content { font-family: 'Nunito', 'Segoe UI', var(--font-text), sans-serif; }
+.mm-theme-clasico .canvas-node[data-mm-lvl="0"] .canvas-node-container {
+	background: var(--mm-root); border: 0 solid transparent; border-radius: 28px;
+}
+.mm-theme-clasico .canvas-node[data-mm-lvl="1"] .canvas-node-container {
+	background: var(--mm-c); border-color: transparent; border-radius: 12px;
+}
+.mm-theme-clasico .canvas-node[data-mm-lvl="0"] .canvas-node-content,
+.mm-theme-clasico .canvas-node[data-mm-lvl="1"] .canvas-node-content {
+	--text-normal: #FFFFFF; --text-muted: rgba(255, 255, 255, 0.85); --text-faint: rgba(255, 255, 255, 0.7);
+	--link-color: #FFFFFF; --link-color-hover: #FFFFFF; --link-external-color: #FFFFFF;
+	--link-unresolved-color: rgba(255, 255, 255, 0.8);
+	color: #FFFFFF; font-weight: 400;
+}
+.mm-theme-clasico .canvas-node[data-mm-lvl="2"] .canvas-node-container,
+.mm-theme-clasico .canvas-node[data-mm-lvl="x"] .canvas-node-container {
+	background: color-mix(in srgb, var(--mm-c) 16%, #FBFAF6); border-color: transparent; border-radius: 10px;
+}
+.mm-theme-clasico .canvas-node[data-mm-lvl="2"] .canvas-node-content,
+.mm-theme-clasico .canvas-node[data-mm-lvl="x"] .canvas-node-content {
+	--text-normal: #262638; color: #262638; font-weight: 400;
+}
+/* imagenes y notas: nunca sobre un relleno de color, solo un marco */
+.mm-theme-clasico .canvas-node[data-mm-type="file"] .canvas-node-container,
+.mm-theme-clasico .canvas-node:has(.canvas-node-content img, .canvas-node-content iframe, .canvas-node-content video) .canvas-node-container {
+	background: #FBFAF6; border: 3px solid var(--mm-c);
+}
+.mm-theme-clasico .canvas-node[data-mm-type="file"] .canvas-node-content,
+.mm-theme-clasico .canvas-node:has(.canvas-node-content img, .canvas-node-content iframe, .canvas-node-content video) .canvas-node-content {
+	--text-normal: #262638; --text-muted: #5A5A6E; --link-color: #5357C9; --link-external-color: #5357C9;
+	color: #262638; font-weight: 400;
+}
+.mm-theme-clasico .canvas-edges [data-mm-branch] path.canvas-display-path { stroke: var(--mm-c); }
+.mm-theme-clasico .canvas-edges [data-mm-lvl] path.canvas-display-path { stroke-linecap: round; }
+.mm-theme-clasico .canvas-edges [data-mm-lvl="1"] path.canvas-display-path { stroke-width: calc(6px * var(--zoom-multiplier)); }
+.mm-theme-clasico .canvas-edges [data-mm-lvl="2"] path.canvas-display-path { stroke-width: calc(2.6px * var(--zoom-multiplier)); }
+.mm-theme-clasico .canvas-path-end { display: none; }
+
+/* ----------------------------------------------------------- Subrayado */
+.canvas-wrapper.mm-theme-subrayado {
+	--canvas-background: #FCFCFA;
+	background-color: #FCFCFA;
+	--mm-b0: #B86A12; --mm-b1: #1F7A72; --mm-b2: #B23A5B; --mm-b3: #3F55C4; --mm-b4: #7446B0;
+}
+.mm-theme-subrayado .canvas-background circle { fill: transparent; }
+.mm-theme-subrayado .canvas-node-content { font-family: 'Newsreader', Georgia, 'Times New Roman', serif; }
+.mm-theme-subrayado .canvas-node[data-mm-lvl="0"] .canvas-node-container {
+	background: #FFFFFF; border: 2px solid #1E1E28; border-radius: 28px;
+}
+.mm-theme-subrayado .canvas-node[data-mm-lvl="1"] .canvas-node-container,
+.mm-theme-subrayado .canvas-node[data-mm-lvl="2"] .canvas-node-container,
+.mm-theme-subrayado .canvas-node[data-mm-lvl="x"] .canvas-node-container {
+	background: transparent; border: 0 solid transparent; border-radius: 0;
+	border-bottom: 1.6px solid var(--mm-c);
+}
+.mm-theme-subrayado .canvas-node[data-mm-lvl="1"] .canvas-node-container { border-bottom-width: 3px; }
+.mm-theme-subrayado .canvas-node[data-mm-lvl="0"] .canvas-node-content,
+.mm-theme-subrayado .canvas-node[data-mm-lvl="1"] .canvas-node-content { --text-normal: #1E1E28; color: #1E1E28; font-weight: 400; }
+.mm-theme-subrayado .canvas-node[data-mm-lvl="2"] .canvas-node-content { --text-normal: #3A3A48; color: #3A3A48; }
+/* una nota embebida sin caja flotaria: le dejamos un marco fino */
+.mm-theme-subrayado .canvas-node[data-mm-type="file"] .canvas-node-container {
+	background: #FFFFFF; border: 1px solid #DAD9D2; border-bottom: 2px solid var(--mm-c);
+}
+.mm-theme-subrayado .canvas-node:not(.is-selected):not(.is-focused):not(.mm-collapsed):not([class*="mm-drop-"]) .canvas-node-container { box-shadow: none; }
+.mm-theme-subrayado .canvas-edges [data-mm-branch] path.canvas-display-path { stroke: var(--mm-c); }
+.mm-theme-subrayado .canvas-edges [data-mm-lvl] path.canvas-display-path { stroke-linecap: round; }
+.mm-theme-subrayado .canvas-edges [data-mm-lvl="1"] path.canvas-display-path { stroke-width: calc(3px * var(--zoom-multiplier)); }
+.mm-theme-subrayado .canvas-edges [data-mm-lvl="2"] path.canvas-display-path { stroke-width: calc(1.6px * var(--zoom-multiplier)); }
+.mm-theme-subrayado .canvas-path-end { display: none; }
+
+/* ------------------------------------------------------------- Pizarra */
+.canvas-wrapper.mm-theme-pizarra {
+	--canvas-background: #22302B;
+	background-color: #22302B;
+	background-image: radial-gradient(ellipse at center, #2E3F38 0%, #22302B 70%);
+	--canvas-dot-pattern: transparent;
+	--background-primary: #22302B; --background-primary-alt: #26352F; --background-secondary: #2C3B35;
+	--background-modifier-border: #44564E; --background-modifier-hover: rgba(238, 241, 230, 0.06);
+	--text-normal: #EEF1E6; --text-muted: #C9D0C0; --text-faint: #8E9A88;
+	--link-color: #F2E6A6; --link-color-hover: #FFF7C8; --link-external-color: #F2E6A6; --link-unresolved-color: #C9D0C0;
+	--mm-root: #EEF1E6;
+	--mm-b0: #F1C9A5; --mm-b1: #A9D8C7; --mm-b2: #F2B8C0; --mm-b3: #B9C8F0; --mm-b4: #E7DE9E;
+}
+.mm-theme-pizarra .canvas-background circle { fill: transparent; }
+.mm-theme-pizarra .canvas-node-content { font-family: 'Kalam', 'Segoe Print', 'Comic Sans MS', cursive; }
+.mm-theme-pizarra .canvas-node[data-mm-lvl="0"] .canvas-node-container {
+	background: #2C3B35; border: 2px solid var(--mm-root); border-radius: 28px;
+}
+.mm-theme-pizarra .canvas-node[data-mm-lvl="1"] .canvas-node-container {
+	background: transparent; border: 1.8px solid var(--mm-c); border-radius: 22px;
+}
+.mm-theme-pizarra .canvas-node[data-mm-lvl="2"] .canvas-node-container,
+.mm-theme-pizarra .canvas-node[data-mm-lvl="x"] .canvas-node-container {
+	background: transparent; border: 1.1px solid var(--mm-c); border-radius: 18px;
+}
+.mm-theme-pizarra .canvas-node[data-mm-lvl="0"] .canvas-node-content,
+.mm-theme-pizarra .canvas-node[data-mm-lvl="1"] .canvas-node-content { font-weight: 400; }
+.mm-theme-pizarra .canvas-node[data-mm-lvl="2"] .canvas-node-content { --text-normal: #D5DBCD; color: #D5DBCD; }
+.mm-theme-pizarra .canvas-node[data-mm-type="file"] .canvas-node-container { background: #26352F; }
+.mm-theme-pizarra .canvas-edges [data-mm-branch] path.canvas-display-path { stroke: var(--mm-c); stroke-opacity: 0.9; }
+.mm-theme-pizarra .canvas-edges [data-mm-lvl] path.canvas-display-path { stroke-linecap: round; }
+.mm-theme-pizarra .canvas-edges [data-mm-lvl="1"] path.canvas-display-path { stroke-width: calc(3.2px * var(--zoom-multiplier)); }
+.mm-theme-pizarra .canvas-edges [data-mm-lvl="2"] path.canvas-display-path { stroke-width: calc(1.8px * var(--zoom-multiplier)); }
+.mm-theme-pizarra .canvas-path-end { display: none; }
+
+/* ------------------------------------------------------------ Cuaderno */
+.canvas-wrapper.mm-theme-cuaderno {
+	--canvas-background: #FBFBF7;
+	background-color: #FBFBF7;
+	--mm-root: #2A4B8D;
+	--mm-b0: #2A4B8D; --mm-b1: #2A4B8D; --mm-b2: #2A4B8D; --mm-b3: #2A4B8D; --mm-b4: #2A4B8D;
+}
+.mm-theme-cuaderno .canvas-background circle { fill: transparent; }
+.mm-theme-cuaderno .mm-grid-line { display: inline; fill: none; stroke: #DCE5EE; stroke-width: 1; }
+.mm-theme-cuaderno .canvas-node-content {
+	--text-normal: #1B2B45; --link-color: #2A4B8D; --link-external-color: #2A4B8D; color: #1B2B45;
+}
+.mm-theme-cuaderno .canvas-node[data-mm-lvl="0"] .canvas-node-container {
+	background: #FFFFFF; border: 2px solid var(--mm-root); border-radius: 4px;
+}
+.mm-theme-cuaderno .canvas-node[data-mm-lvl="1"] .canvas-node-container {
+	background: #FFFFFF; border: 1.3px solid var(--mm-c); border-radius: 4px;
+}
+.mm-theme-cuaderno .canvas-node[data-mm-lvl="2"] .canvas-node-container,
+.mm-theme-cuaderno .canvas-node[data-mm-lvl="x"] .canvas-node-container {
+	background: #FFFFFF; border: 1px solid #B7C4D3; border-radius: 3px;
+}
+.mm-theme-cuaderno .canvas-node.is-themed .canvas-node-container { border-color: var(--canvas-color); }
+.mm-theme-cuaderno .canvas-node[data-mm-lvl="0"] .canvas-node-content { font-weight: 400; }
+.mm-theme-cuaderno .canvas-node:not(.is-selected):not(.is-focused):not(.mm-collapsed):not([class*="mm-drop-"]) .canvas-node-container {
+	box-shadow: 0 1.5px 3px rgba(27, 43, 69, 0.14);
+}
+.mm-theme-cuaderno .canvas-edges [data-mm-branch] path.canvas-display-path { stroke: var(--mm-c); }
+.mm-theme-cuaderno .canvas-edges [data-mm-lvl="1"] path.canvas-display-path { stroke-width: calc(2.2px * var(--zoom-multiplier)); }
+.mm-theme-cuaderno .canvas-edges [data-mm-lvl="2"] path.canvas-display-path { stroke-width: calc(1.3px * var(--zoom-multiplier)); }
+.mm-theme-cuaderno .canvas-edges [data-mm-branch] polygon.canvas-path-end { fill: var(--mm-c); stroke: var(--mm-c); }
+
+/* --------------------------------------------------------------- Papel */
+/*
+ * El beige de la primera muestra: fondo de papel con puntos, tarjetas claras
+ * y lineas grises con punta. Un solo color de tinta para todo el mapa.
+ */
+.canvas-wrapper.mm-theme-papel {
+	--canvas-background: #E9DECB;
+	background-color: #E9DECB;
+	--canvas-dot-pattern: #CDBFA6;
+	--background-primary: #F1E8DA; --background-primary-alt: #EDE3D2; --background-secondary: #E4D8C2;
+	--background-modifier-border: #C9BCA5; --background-modifier-hover: rgba(90, 78, 60, 0.07);
+	--text-normal: #2A241C; --text-muted: #6B6050; --text-faint: #908471;
+	--link-color: #7A5B2E; --link-color-hover: #5C4522; --link-external-color: #7A5B2E; --link-unresolved-color: #908471;
+	--mm-root: #8C857A;
+	--mm-b0: #8C857A; --mm-b1: #8C857A; --mm-b2: #8C857A; --mm-b3: #8C857A; --mm-b4: #8C857A;
+}
+.mm-theme-papel .canvas-background circle { fill: #CDBFA6; }
+.mm-theme-papel .canvas-node-content {
+	--text-normal: #2A241C; --link-color: #7A5B2E; --link-external-color: #7A5B2E; color: #2A241C;
+}
+.mm-theme-papel .canvas-node[data-mm-lvl="0"] .canvas-node-container {
+	background: #F1E8DA; border: 1.2px solid #B9AB92; border-radius: 5px;
+}
+.mm-theme-papel .canvas-node[data-mm-lvl="1"] .canvas-node-container,
+.mm-theme-papel .canvas-node[data-mm-lvl="2"] .canvas-node-container,
+.mm-theme-papel .canvas-node[data-mm-lvl="x"] .canvas-node-container {
+	background: #F1E8DA; border: 1px solid #C9BCA5; border-radius: 5px;
+}
+.mm-theme-papel .canvas-node.is-themed .canvas-node-container { border-color: var(--canvas-color); }
+.mm-theme-papel .canvas-node[data-mm-lvl="0"] .canvas-node-content { font-weight: 400; }
+.mm-theme-papel .canvas-edges [data-mm-branch] path.canvas-display-path { stroke: var(--mm-c); }
+.mm-theme-papel .canvas-edges [data-mm-lvl="1"] path.canvas-display-path { stroke-width: calc(1.6px * var(--zoom-multiplier)); }
+.mm-theme-papel .canvas-edges [data-mm-lvl="2"] path.canvas-display-path { stroke-width: calc(1.4px * var(--zoom-multiplier)); }
+.mm-theme-papel .canvas-edges [data-mm-branch] polygon.canvas-path-end { fill: var(--mm-c); stroke: var(--mm-c); }
+
+/* --------------------------------------------------------------- Noche */
+.canvas-wrapper.mm-theme-noche {
+	--canvas-background: #0E1524;
+	background-color: #0E1524;
+	--canvas-dot-pattern: #1C2742;
+	--background-primary: #131C30; --background-primary-alt: #162038; --background-secondary: #18223A;
+	--background-modifier-border: #2A3654; --background-modifier-hover: rgba(143, 162, 255, 0.08);
+	--text-normal: #E6EAF6; --text-muted: #AEB8D2; --text-faint: #7D89A8;
+	--link-color: #9FB0FF; --link-color-hover: #C7D0FF; --link-external-color: #9FB0FF; --link-unresolved-color: #AEB8D2;
+	--mm-root: #8FA2FF;
+	--mm-b0: #FFB65C; --mm-b1: #5EE0D2; --mm-b2: #FF7AA2; --mm-b3: #8FA2FF; --mm-b4: #C38DFF;
+}
+.mm-theme-noche .canvas-background circle { fill: #1C2742; }
+.mm-theme-noche .canvas-node[data-mm-lvl="0"] .canvas-node-container {
+	background: #18223A; border: 2px solid var(--mm-root); border-radius: 14px;
+}
+.mm-theme-noche .canvas-node[data-mm-lvl="1"] .canvas-node-container {
+	background: color-mix(in srgb, var(--mm-c) 18%, #0E1524); border: 1.4px solid var(--mm-c); border-radius: 12px;
+}
+.mm-theme-noche .canvas-node[data-mm-lvl="2"] .canvas-node-container,
+.mm-theme-noche .canvas-node[data-mm-lvl="x"] .canvas-node-container {
+	background: color-mix(in srgb, var(--mm-c) 9%, #0E1524);
+	border: 1px solid color-mix(in srgb, var(--mm-c) 45%, #0E1524); border-radius: 10px;
+}
+.mm-theme-noche .canvas-node[data-mm-lvl="0"] .canvas-node-content { font-weight: 400; }
+.mm-theme-noche .canvas-node[data-mm-lvl="1"] .canvas-node-content {
+	--text-normal: color-mix(in srgb, var(--mm-c) 35%, #FFFFFF); color: color-mix(in srgb, var(--mm-c) 35%, #FFFFFF); font-weight: 400;
+}
+.mm-theme-noche .canvas-node[data-mm-type="file"] .canvas-node-container,
+.mm-theme-noche .canvas-node:has(.canvas-node-content img, .canvas-node-content iframe, .canvas-node-content video) .canvas-node-container {
+	background: #131C30;
+}
+.mm-theme-noche .canvas-edges [data-mm-branch] path.canvas-display-path {
+	stroke: var(--mm-c); filter: drop-shadow(0 0 3px var(--mm-c));
+}
+.mm-theme-noche .canvas-edges [data-mm-lvl] path.canvas-display-path { stroke-linecap: round; }
+.mm-theme-noche .canvas-edges [data-mm-lvl="1"] path.canvas-display-path { stroke-width: calc(4px * var(--zoom-multiplier)); }
+.mm-theme-noche .canvas-edges [data-mm-lvl="2"] path.canvas-display-path { stroke-width: calc(2px * var(--zoom-multiplier)); }
+.mm-theme-noche .canvas-path-end { display: none; }
+
+/* -------------------------------- la seleccion de Obsidian siempre se ve */
+.canvas-wrapper[class*="mm-theme-"] .canvas-node.is-selected .canvas-node-container,
+.canvas-wrapper[class*="mm-theme-"] .canvas-node.is-focused .canvas-node-container {
+	border-color: var(--color-accent);
+}
+
+/* ------------------------------------------------------- indicador de zoom */
+.canvas-wrapper .mm-zoom {
+	position: absolute;
+	left: 12px;
+	bottom: 12px;
+	z-index: 30;
+	padding: 3px 10px;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 999px;
+	background-color: var(--background-primary);
+	color: var(--text-muted);
+	font-family: var(--font-monospace);
+	font-size: 12px;
+	font-variant-numeric: tabular-nums;
+	line-height: 18px;
+	cursor: pointer;
+	user-select: none;
+	box-shadow: var(--shadow-s);
+	transition: color 120ms ease, border-color 120ms ease;
+}
+
+.canvas-wrapper .mm-zoom:hover {
+	color: var(--text-normal);
+	border-color: var(--interactive-accent);
+}
+
+
+/* ============================================================ fondos */
+/*
+ * El fondo se elige aparte del estilo: estas reglas pintan solo el papel de
+ * atras y el color de los puntos, no los nodos ni las lineas. Van al final del
+ * archivo para ganarle al fondo que trae cada estilo.
+ */
+.canvas-wrapper.mm-bg-papel {
+	--canvas-background: #E9DECB;
+	background-color: #E9DECB;
+	--canvas-dot-pattern: #CDBFA6;
+}
+.canvas-wrapper.mm-bg-papel .canvas-background circle { fill: #CDBFA6; }
+.canvas-wrapper.mm-bg-papel .mm-grid-line { stroke: #D6C8AE; }
+
+.canvas-wrapper.mm-bg-crema {
+	--canvas-background: #F6F1E7;
+	background-color: #F6F1E7;
+	--canvas-dot-pattern: #DED6C6;
+}
+.canvas-wrapper.mm-bg-crema .canvas-background circle { fill: #DED6C6; }
+.canvas-wrapper.mm-bg-crema .mm-grid-line { stroke: #E4DCCC; }
+
+.canvas-wrapper.mm-bg-claro {
+	--canvas-background: #F1F1EE;
+	background-color: #F1F1EE;
+	--canvas-dot-pattern: #D8D8D3;
+}
+.canvas-wrapper.mm-bg-claro .canvas-background circle { fill: #D8D8D3; }
+.canvas-wrapper.mm-bg-claro .mm-grid-line { stroke: #DFDFDA; }
+
+.canvas-wrapper.mm-bg-gris {
+	--canvas-background: #DFE0E2;
+	background-color: #DFE0E2;
+	--canvas-dot-pattern: #C3C5C9;
+}
+.canvas-wrapper.mm-bg-gris .canvas-background circle { fill: #C3C5C9; }
+.canvas-wrapper.mm-bg-gris .mm-grid-line { stroke: #CBCDD1; }
+
+.canvas-wrapper.mm-bg-pizarra {
+	--canvas-background: #22302B;
+	background-color: #22302B;
+	--canvas-dot-pattern: #35483F;
+}
+.canvas-wrapper.mm-bg-pizarra .canvas-background circle { fill: #35483F; }
+.canvas-wrapper.mm-bg-pizarra .mm-grid-line { stroke: #35483F; }
+
+.canvas-wrapper.mm-bg-noche {
+	--canvas-background: #0E1524;
+	background-color: #0E1524;
+	--canvas-dot-pattern: #1C2742;
+}
+.canvas-wrapper.mm-bg-noche .canvas-background circle { fill: #1C2742; }
+.canvas-wrapper.mm-bg-noche .mm-grid-line { stroke: #1C2742; }
+
+/* ============================================================ historial */
+/* El panel con las instantaneas de un mapa y las ventanitas que usa. */
+.mm-snapshots {
+	padding: 0;
+}
+
+.mm-snap-header {
+	position: sticky;
+	top: 0;
+	z-index: 2;
+	padding: 10px 12px;
+	border-bottom: 1px solid var(--background-modifier-border);
+	background-color: var(--background-secondary);
+}
+
+.mm-snap-title {
+	font-weight: var(--font-semibold, 600);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.mm-snap-tools {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	margin-top: 8px;
+}
+
+.mm-snap-now {
+	margin-top: 8px;
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+}
+
+.mm-snap-list {
+	padding: 6px 8px 16px;
+}
+
+.mm-snap-empty {
+	padding: 16px 8px;
+	color: var(--text-muted);
+	font-size: var(--font-ui-small);
+	line-height: 1.5;
+}
+
+.mm-snap-row {
+	padding: 8px 8px 8px 14px;
+	border-left: 2px solid var(--background-modifier-border);
+	margin-left: 4px;
+	position: relative;
+}
+
+/* un punto sobre la linea de tiempo */
+.mm-snap-row::before {
+	content: "";
+	position: absolute;
+	left: -5px;
+	top: 13px;
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background-color: var(--background-primary);
+	border: 2px solid var(--text-faint);
+}
+
+.mm-snap-row.is-open {
+	background-color: var(--background-modifier-hover);
+	border-radius: 0 var(--radius-s, 4px) var(--radius-s, 4px) 0;
+}
+
+.mm-snap-row.is-open::before {
+	border-color: var(--interactive-accent);
+	background-color: var(--interactive-accent);
+}
+
+.mm-snap-when {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: 6px;
+	font-size: var(--font-ui-small);
+	color: var(--text-normal);
+}
+
+.mm-snap-label {
+	padding: 0 6px;
+	border-radius: 999px;
+	background-color: var(--background-modifier-hover);
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+}
+
+.mm-snap-stats {
+	margin-top: 2px;
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+	font-variant-numeric: tabular-nums;
+}
+
+.mm-snap-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px;
+	margin-top: 6px;
+}
+
+.mm-snap-btn {
+	height: auto;
+	padding: 2px 9px;
+	border-radius: 999px;
+	font-size: var(--font-ui-smaller);
+	line-height: 18px;
+	cursor: pointer;
+}
+
+.mm-modal-text {
+	margin-bottom: 12px;
+	color: var(--text-muted);
+	line-height: 1.5;
+}
+
+.mm-modal-input {
+	width: 100%;
+	margin-bottom: 12px;
+}
+
+.mm-modal-buttons {
+	display: flex;
+	justify-content: flex-end;
+	gap: 8px;
+}
+
+.mm-modal-buttons .mm-snap-btn {
+	padding: 4px 14px;
+	font-size: var(--font-ui-small);
+}
