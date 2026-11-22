@@ -20,6 +20,8 @@ const code = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
 console.log('\n--- plugin guidelines');
 ok(!/innerHTML|outerHTML|insertAdjacentHTML/.test(code), 'no innerHTML / outerHTML / insertAdjacentHTML');
 ok(!/\bactiveLeaf\b/.test(code), 'no workspace.activeLeaf');
+ok(!/localStorage|sessionStorage/.test(code), 'no localStorage or sessionStorage (plugin data goes through loadData/saveData)');
+ok(!/clipboard\.read/.test(code), 'the clipboard is only written to, never read');
 ok(!/hotkeys\s*:/.test(code), 'no default hotkeys');
 ok(!/console\.(log|debug|info)\(/.test(code), 'no console logging except errors');
 ok(!/\.style\.[a-zA-Z]+\s*=[^=]/.test(code), 'no hardcoded style assignments (only CSS custom properties via setProperty)');

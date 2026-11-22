@@ -25,10 +25,8 @@ const LOCALES = { es: require('./locales/es.js') };
 /** Idioma de la interfaz de Obsidian ('en' si no hay traduccion para ese idioma). */
 function detectLocale() {
 	let lang = '';
+	// getLanguage es la API publica para esto (Obsidian 1.8 en adelante)
 	try { if (typeof obsidian.getLanguage === 'function') lang = obsidian.getLanguage(); } catch (e) { /* noop */ }
-	if (!lang) {
-		try { lang = window.localStorage.getItem('language') || ''; } catch (e) { /* noop */ }
-	}
 	const code = String(lang || 'en').toLowerCase().split('-')[0];
 	return LOCALES[code] ? code : 'en';
 }

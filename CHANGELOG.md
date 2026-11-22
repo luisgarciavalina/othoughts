@@ -1,5 +1,10 @@
 # Changelog
 
+## 5.2.1
+
+- The interface language now comes only from Obsidian's public API; the plugin no longer reads Obsidian's local storage.
+- Releases carry signed build provenance (artifact attestations) for main.js, manifest.json and styles.css.
+
 ## 5.2.0
 
 First public release. The plugin was called Canvas Mindmap Tools while it was private; canvases and settings made with it keep working.

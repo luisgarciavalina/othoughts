@@ -39,10 +39,26 @@ jobs:
           npm test
 
       # Signed build provenance, recommended by the directory. It depends on an
-      # outside service, so if that service fails the release still goes out.
+      # outside service (Sigstore), so it is tried twice, a minute apart, and if
+      # both tries fail the release still goes out.
       - name: Generate artifact attestation
+        id: attest
         continue-on-error: true
-        uses: actions/attest@v4
+        uses: actions/attest-build-provenance@v4
+        with:
+          subject-path: |
+            main.js
+            manifest.json
+            styles.css
+
+      - name: Wait before retrying the attestation
+        if: steps.attest.outcome == 'failure'
+        run: sleep 60
+
+      - name: Generate artifact attestation (second try)
+        if: steps.attest.outcome == 'failure'
+        continue-on-error: true
+        uses: actions/attest-build-provenance@v4
         with:
           subject-path: |
             main.js
