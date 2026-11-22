@@ -1,5 +1,10 @@
 # Changelog
 
+## 5.2.2
+
+- Styles no longer use the CSS `:has()` selector, which is slow to re-evaluate. Cards that show an image, a video or a web page are marked by the plugin instead.
+- Fixed: in the Classic and Night styles, a card you were typing in was drawn as if it held an embedded page.
+
 ## 5.2.1
 
 - The interface language now comes only from Obsidian's public API; the plugin no longer reads Obsidian's local storage.

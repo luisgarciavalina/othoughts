@@ -625,6 +625,20 @@ function paintToolPanel(plugin, canvas, panel) {
 	chip(hist, t('See history'), false, t('Every saved version of this map'), () => plugin.openSnapshotHistory());
 }
 
+/**
+ * La tarjeta muestra una imagen, un video o una pagina? Los estilos no pintan
+ * encima de eso: solo le ponen un marco. (En CSS se haria con :has(), que obliga
+ * al navegador a revisar mucho de mas cada vez que algo cambia.) El iframe con
+ * el que Obsidian edita el texto de la tarjeta no cuenta.
+ */
+function hasMedia(el) {
+	try {
+		return !!el.querySelector('.canvas-node-content img, .canvas-node-content video, .canvas-node-content iframe:not(.is-controlled)');
+	} catch (e) {
+		return false;
+	}
+}
+
 /** Pone (o saca, con null) un atributo solo si cambia. */
 function setData(el, name, value) {
 	if (!el || typeof el.getAttribute !== 'function') return;
@@ -3120,7 +3134,7 @@ class CanvasMindmapTools extends Plugin {
 			// la letra y las marcas de estilo vuelven a como las deja Obsidian
 			document.querySelectorAll('.canvas-node').forEach((el) => {
 				applyFontScale(el, 1, 16, 0);
-				for (const a of ['data-mm-type', 'data-mm-lvl', 'data-mm-branch']) el.removeAttribute(a);
+				for (const a of ['data-mm-type', 'data-mm-media', 'data-mm-lvl', 'data-mm-branch']) el.removeAttribute(a);
 			});
 			document.querySelectorAll('.canvas-edges [data-mm-lvl], .canvas-edges [data-mm-branch]').forEach((el) => {
 				el.removeAttribute('data-mm-lvl');
@@ -4458,6 +4472,7 @@ class CanvasMindmapTools extends Plugin {
 			const d = safeData(node) || {};
 			const i = info.get(node.id);
 			setData(el, 'data-mm-type', d.type || 'text');
+			setData(el, 'data-mm-media', hasMedia(el) ? '1' : null);
 			setData(el, 'data-mm-lvl', d.type === 'group' ? 'g' : (i ? i.lvl : 'x'));
 			setData(el, 'data-mm-branch', i && i.br !== null && !d.color ? String(i.br) : null);
 		});

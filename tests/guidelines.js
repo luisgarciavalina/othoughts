@@ -37,6 +37,10 @@ code.replace(/canvasCommand\('([^']+)'/g, (m, id) => { ids.push(id); return m; }
 code.replace(/\bid: '([^']+)'/g, (m, id) => { ids.push(id); return m; });
 ok(ids.length > 20 && !ids.some((id) => id.indexOf(manifest.id) > -1), 'command ids do not repeat the plugin id (' + ids.length + ' commands)');
 
+const css = read('styles.css');
+ok(!/:has\(/.test(css), 'no :has() in styles.css (slow selector, flagged by the CSS lint)');
+ok(!/!important/.test(css), 'no !important in styles.css');
+
 console.log('\n--- manifest and versions');
 ok(/^[a-z-]+$/.test(manifest.id) && !/obsidian/.test(manifest.id) && !/plugin$/.test(manifest.id), 'id: lowercase letters and hyphens, no "obsidian", does not end in "plugin"');
 ok(!/obsidian|obsi-|-sidian|plugin/i.test(manifest.name) && /^[A-Za-z0-9 +()-]+$/.test(manifest.name), 'name: Basic Latin, no "Obsidian", no "Plugin"');

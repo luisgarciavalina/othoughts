@@ -28,7 +28,7 @@ const EXPOSED = [
 	'applyCanvasData', 'renewRetargetedEdges', 'flushLayout', 'exportModel', 'toFreeMind', 'toOpml', 'toMarkdown', 'xmlAttr',
 	'EXPORT_FORMATS', 'EXPORT_MARK', 'paintToolPanel', 'THEMES', 'BACKGROUNDS', 'DIRECTIONS', 'DIR_SHORT', 'ALIGN_MODES',
 	'ALIGN_LABEL', 'COLLAPSED_KEY', 'PAYLOAD_KEY', 'LINK_KEY', 'FONT_KEY', 'MindmapSettingTab', 'syncDecorations', 'BranchDrag',
-	'branchSides', 'applyFontScale', 'applyFontToFrames', 'nodeFontPx', 'baseFontSize', 'FONT_LEVEL', 'chip', 'payloadHolding',
+	'branchSides', 'applyFontScale', 'applyFontToFrames', 'nodeFontPx', 'baseFontSize', 'FONT_LEVEL', 'chip', 'payloadHolding', 'hasMedia',
 	'stampLinks', 'linkSignature', 'assignParents', 'getCanvas', 'setLocale', 'lazyLabels', 'CANVAS_COLORS', 'ARROW_PRESETS',
 	'edgeSidesFor', 'fitEdgesLive', 'smoothBezier', 'smoothEdge', 'installCurvePatch', 'removeCurvePatch', 'SnapshotsView',
 	'parseSnapshotName', 'snapshotStamp', 'snapshotIndex', 'snapshotDiff', 'sameMap', 'snapshotDue', 'cleanSnapshotLabel', 'SNAPSHOTS_VIEW',

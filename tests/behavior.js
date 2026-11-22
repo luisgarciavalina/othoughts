@@ -91,6 +91,19 @@ console.log('\n--- el teclado solo actua sobre tarjetas que son parte de un mapa
 	ok(plugin.navigate('ArrowRight') === false, 'en un canvas sin mapas, las flechas no seleccionan nada por su cuenta');
 }
 
+console.log('\n--- tarjetas con imagenes (para los estilos)');
+{
+	// el DOM de mentira resuelve un selector compuesto preguntando por cada parte
+	const tarjeta = (adentro) => ({
+		querySelector: (sel) => sel.split(',').map((x) => x.trim()).some((x) => adentro.indexOf(x) > -1) ? {} : null,
+	});
+	ok(T.hasMedia(tarjeta(['.canvas-node-content img'])) === true, 'una imagen cuenta');
+	ok(T.hasMedia(tarjeta(['.canvas-node-content video'])) === true, 'un video tambien');
+	ok(T.hasMedia(tarjeta(['.canvas-node-content iframe:not(.is-controlled)'])) === true, 'y una pagina incrustada');
+	ok(T.hasMedia(tarjeta(['.canvas-node-content iframe.is-controlled'])) === false, 'el iframe con el que Obsidian edita el texto no cuenta');
+	ok(T.hasMedia(tarjeta([])) === false && T.hasMedia({}) === false, 'una tarjeta de texto, no');
+}
+
 console.log('\n--- arranque y apagado');
 (async () => {
 	const { plugin } = k.setup(k.mapaBase());

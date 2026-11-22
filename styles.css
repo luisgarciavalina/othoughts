@@ -456,13 +456,14 @@ path.mm-edge-thick {
 .mm-theme-clasico .canvas-node[data-mm-lvl="x"] .canvas-node-content {
 	--text-normal: #262638; color: #262638; font-weight: 400;
 }
-/* imagenes y notas: nunca sobre un relleno de color, solo un marco */
+/* imagenes y notas: nunca sobre un relleno de color, solo un marco.
+   data-mm-media lo pone el plugin en las tarjetas con una imagen, un video o una pagina adentro. */
 .mm-theme-clasico .canvas-node[data-mm-type="file"] .canvas-node-container,
-.mm-theme-clasico .canvas-node:has(.canvas-node-content img, .canvas-node-content iframe, .canvas-node-content video) .canvas-node-container {
+.mm-theme-clasico .canvas-node[data-mm-media] .canvas-node-container {
 	background: #FBFAF6; border: 3px solid var(--mm-c);
 }
 .mm-theme-clasico .canvas-node[data-mm-type="file"] .canvas-node-content,
-.mm-theme-clasico .canvas-node:has(.canvas-node-content img, .canvas-node-content iframe, .canvas-node-content video) .canvas-node-content {
+.mm-theme-clasico .canvas-node[data-mm-media] .canvas-node-content {
 	--text-normal: #262638; --text-muted: #5A5A6E; --link-color: #5357C9; --link-external-color: #5357C9;
 	color: #262638; font-weight: 400;
 }
@@ -635,7 +636,7 @@ path.mm-edge-thick {
 	--text-normal: color-mix(in srgb, var(--mm-c) 35%, #FFFFFF); color: color-mix(in srgb, var(--mm-c) 35%, #FFFFFF); font-weight: 400;
 }
 .mm-theme-noche .canvas-node[data-mm-type="file"] .canvas-node-container,
-.mm-theme-noche .canvas-node:has(.canvas-node-content img, .canvas-node-content iframe, .canvas-node-content video) .canvas-node-container {
+.mm-theme-noche .canvas-node[data-mm-media] .canvas-node-container {
 	background: #131C30;
 }
 .mm-theme-noche .canvas-edges [data-mm-branch] path.canvas-display-path {
